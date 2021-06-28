@@ -1,0 +1,47 @@
+<div class="col-grid col-lg-12">  
+  <div style="display: flex;">   
+    <h2>Build your sandwich!</h2>
+    <h2 *ngIf="sandwich.totalPrice" style="padding-left: 5px;"> (Total price: {{sandwich?.totalPrice | currency:'EUR' }})</h2>
+  </div>
+  <div class="col-grid col-lg-12" style="padding-top: 50px;">
+    <span style="font-weight: bold;">Select the size the of sandwich:</span>
+    <div style="display: flex;">
+      <div class="col-lg-2" *ngFor="let size of sandwichSizesOptions">
+        <p-radioButton name="sandwichSize" [label]="size.name" [value]="size" [(ngModel)]="sandwich.size" (onClick)="sandwich.type ? calculatePriceSandwich() : undefined" ></p-radioButton>
+      </div>
+    </div>
+  </div>
+  <div class="col-grid col-lg-12" style="padding-top: 50px;" *ngIf="sandwich.size">
+    <span style="font-weight: bold;">Select the type the of sandwich:</span>
+    <div style="display: flex;">
+      <div class="col-lg-2" *ngFor="let type of sandwichTypesOptions">
+        <p-radioButton name="sandwichType" [label]="type.description" [value]="type" [(ngModel)]="sandwich.type" (onClick)="calculatePriceSandwich()"></p-radioButton>
+      </div>
+    </div>
+  </div>
+  <div class="col-grid col-lg-6" style="padding-top: 50px;" *ngIf="sandwich.type">
+    <span style="font-weight: bold;">Select the toppings:</span>
+    <p-table [value]="toppingsOptions" [(selection)]="sandwich.toppings"  [responsive]="true" dataKey="id">
+      <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3em">
+              <p-tableHeaderCheckbox (click)="calculatePriceSandwich()"></p-tableHeaderCheckbox>
+            </th>
+            <th>Description</th>
+            <th style="width: 10%;">Price</th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-topping>
+          <tr [pSelectableRow]="topping">
+            <td>
+                <p-tableCheckbox [value]="topping" (click)="calculatePriceSandwich()"></p-tableCheckbox>
+            </td>
+            <td style="text-align: start;" >{{ topping.description }}</td>
+            <td>{{ (topping.unitPrice * topping.servingPerNormalSize * sandwich.size.multiplier) | currency:'EUR' }}</td>
+          </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <p-button style="padding-top: 20px" icon="pi pi-check" label="Confirm Order" *ngIf="sandwich.size ? sandwich.type : false" (click)="confirmOrder()"></p-button>
+
+</div>
